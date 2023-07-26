@@ -35,7 +35,7 @@ const TextEditor = () => {
     socket.emit("get-document", documentId);
 
     return () => socket.disconnect();
-  }, []);
+  }, [documentId]);
 
   useEffect(() => {
     //INIT
@@ -71,6 +71,14 @@ const TextEditor = () => {
       socket.off("receive-changes", receivingHandler);
       node.innerHTML = "";
     };
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      socketRef.current.emit("save-document", quillRef.current.getContents());
+    }, SAVE_INTERVAL_MS);
+
+    return () => clearInterval(interval);
   }, []);
 
   return <div className="container" ref={wrapperRef}></div>;
